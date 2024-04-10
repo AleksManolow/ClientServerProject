@@ -15,14 +15,16 @@ namespace ClientServerProject.Server.Repositories
 
         public bool ValidateName(string name)
         {
-            
-            return !string.IsNullOrEmpty(name);
+            return !string.IsNullOrEmpty(name) && name.Length > 2 && name.All(x => char.IsLetter(x));
         }
 
         public bool ValidatePassword(string password)
         {
-            
-            return password.Length >= 6; 
+            bool isPassword = Regex.IsMatch(password,
+                @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,15}$",
+                RegexOptions.IgnoreCase);
+
+            return isPassword; 
         }
     }
 }
