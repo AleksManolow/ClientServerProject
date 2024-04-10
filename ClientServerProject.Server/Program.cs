@@ -1,10 +1,28 @@
-﻿namespace ClientServerProject.Server
+﻿using ClientServerProject.Server.Models;
+using ClientServerProject.Server.Repositories;
+
+namespace ClientServerProject.Server
 {
-    internal class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            string connectionString = @"Server=DESKTOP-AJ5FISA\SQLEXPRESS;Database=ClientServerProject;Integrated Security = True;TrustServerCertificate=True;";
+
+            var userRepository = new UserRepository(connectionString);
+
+            userRepository.InitializeDatabase();
+
+            Console.WriteLine(userRepository.GetById(2).FirstName);
+
+            var httpServer = new HttpServer(userRepository);
+            httpServer.Start();
+
+            Console.WriteLine("Server started. Press any key to stop...");
+            Console.ReadKey();
+
+            httpServer.Stop();
+
         }
     }
 }
