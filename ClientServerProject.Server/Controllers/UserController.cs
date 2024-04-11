@@ -112,8 +112,7 @@ namespace ClientServerProject.Server.Controllers
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "application/json";
                 var tokenJson = JsonConvert.SerializeObject(new { token });
-                var responseBytes = Encoding.UTF8.GetBytes(tokenJson);
-                response.OutputStream.Write(responseBytes, 0, responseBytes.Length);
+                response.OutputStream.Write(Encoding.UTF8.GetBytes(tokenJson), 0, Encoding.UTF8.GetBytes(tokenJson).Length);
                 response.Close();
 
             }
@@ -127,6 +126,40 @@ namespace ClientServerProject.Server.Controllers
         }
         public async Task Logout(HttpListenerContext context)
         {
+
+            var request = context.Request;
+            var response = context.Response;
+
+            if (request.HttpMethod != "POST")
+            {
+                response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                response.Close();
+                return;
+            }
+
+            var token = request.Headers["Authorization"]?.Replace("Bearer ", "");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.Close();
+                return;
+            }
+
+            try
+            {
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Logged out successfully"), 0, Encoding.UTF8.GetBytes("Logged out successfully").Length);
+                response.Close();
+            }
+            catch (Exception)
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Unexpected error occurred while trying to logout! Please try again later!"), 0, Encoding.UTF8.GetBytes("Unexpected error occurred while trying to logout! Please try again later!").Length);
+                response.Close();
+            }
 
         }
     }
