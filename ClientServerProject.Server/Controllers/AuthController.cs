@@ -55,7 +55,7 @@ namespace ClientServerProject.Server.Controllers
 
             try
             {
-                _userRepository.AddUser(user);
+                _userRepository.CreateUser(user);
 
                 //Logic to send confirmation email here to create
 
