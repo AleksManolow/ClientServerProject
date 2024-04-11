@@ -44,10 +44,13 @@ namespace ClientServerProject.Server
             switch (context.Request.Url.AbsolutePath)
             {
                 case "/register":
-                    usersController.RegisterUserAsync(context);
+                    usersController.Register(context);
                     break;
                 case "/login":
-                    usersController.LoginUserAsync(context);
+                    usersController.Login(context);
+                    break;
+                case "/logout":
+                    usersController.Logout(context);
                     break;
                 default:
                     context.Response.StatusCode = (int)HttpStatusCode.NotFound;

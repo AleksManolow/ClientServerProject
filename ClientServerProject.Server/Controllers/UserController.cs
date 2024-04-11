@@ -1,5 +1,7 @@
-﻿using ClientServerProject.Server.Repositories;
+﻿using ClientServerProject.Server.Models;
+using ClientServerProject.Server.Repositories;
 using ClientServerProject.Server.Repositories.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +21,65 @@ namespace ClientServerProject.Server.Controllers
             _userRepository = userRepository;
             _validation = new Validation();
         }
-        public async Task RegisterUserAsync(HttpListenerContext context)
+        public async Task Register(HttpListenerContext context)
         {
-            Console.WriteLine("Register");
+            var request = context.Request;
+            var response = context.Response;
+
+            if (request.HttpMethod != "POST")
+            {
+                response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                response.Close();
+                return;
+            }
+            string streamReader = new StreamReader(request.InputStream).ReadToEnd();
+
+            User user = JsonConvert.DeserializeObject<User>(streamReader)!;
+
+            if (!_validation.ValidateEmail(user.Email) || !_validation.ValidateName(user.FirstName) || !_validation.ValidateName(user.LastName) || !_validation.ValidatePassword(user.Password))
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Invalid user data"), 0, Encoding.UTF8.GetBytes("Invalid user data").Length);
+                response.Close();
+                return;
+            }
+
+            if (_userRepository.GetByEmail(user.Email) != null)
+            {
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("User with this email is already registered"), 0, Encoding.UTF8.GetBytes("User with this email is already registered").Length);
+                response.Close();
+                return;
+            }
+
+            try
+            {
+                _userRepository.AddUser(user);
+
+                //Logic to send confirmation email here to create
+
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.ContentType = "text/plain";
+                var responseBytes = Encoding.UTF8.GetBytes("User registered successfully");
+                response.OutputStream.Write(responseBytes, 0, responseBytes.Length);
+                response.Close();
+            }
+            catch (Exception)
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Unexpected error occurred while trying to register! Please try again later!"), 0, Encoding.UTF8.GetBytes("Unexpected error occurred while trying to register! Please try again later!").Length);
+                response.Close();
+            }
         }
-        public async Task LoginUserAsync(HttpListenerContext context)
+        public async Task Login(HttpListenerContext context)
         {
-            Console.WriteLine("Login");
+            
+        }
+        public async Task Logout(HttpListenerContext context)
+        {
+
         }
     }
 }

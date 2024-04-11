@@ -13,8 +13,6 @@ namespace ClientServerProject.Server
 
             userRepository.InitializeDatabase();
 
-            Console.WriteLine(userRepository.GetById(2).FirstName);
-
             var httpServer = new HttpServer(userRepository);
             httpServer.Start();
 
