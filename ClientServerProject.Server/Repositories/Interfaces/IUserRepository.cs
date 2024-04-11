@@ -13,5 +13,6 @@ namespace ClientServerProject.Server.Repositories.Interfaces
         User GetById(int id);
         User GetByEmail(string email);
         void AddUser(User user);
+        public string GenerateJwt(User user);
     }
 }

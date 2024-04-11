@@ -1,6 +1,10 @@
 ﻿using ClientServerProject.Server.Models;
 using ClientServerProject.Server.Repositories.Interfaces;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ClientServerProject.Server.Repositories
 {
@@ -130,6 +134,29 @@ namespace ClientServerProject.Server.Repositories
             var command = new SqlCommand(query, connection);
             int count = (int)command.ExecuteScalar();
             return count > 0;
+        }
+        public string GenerateJwt(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+            
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ecawiasqrpqrgyhwnolrudpbsrwaynbqdayndnmcehjnwqyouikpodzaqxivwkconwqbhrmxfgccbxbyljguwlxhdlcvxlutbnwjlgpfhjgqbegtbxbvwnacyqnltrby"));
+            var _TokenExpiryTimeInHour = Convert.ToInt64("3");
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Issuer = "http://localhost:8075",
+                Audience = "http://localhost:8075",
+                Expires = DateTime.UtcNow.AddHours(_TokenExpiryTimeInHour),
+                SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
+                Subject = new ClaimsIdentity(claims)
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }
