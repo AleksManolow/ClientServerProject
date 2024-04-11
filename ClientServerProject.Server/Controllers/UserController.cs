@@ -75,7 +75,55 @@ namespace ClientServerProject.Server.Controllers
         }
         public async Task Login(HttpListenerContext context)
         {
+            var request = context.Request;
+            var response = context.Response;
+
+            if (request.HttpMethod != "POST")
+            {
+                response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                response.Close();
+                return;
+            }
+
+            string streamReader = new StreamReader(request.InputStream).ReadToEnd();
+            UserLoginForm userLoginForm = JsonConvert.DeserializeObject<UserLoginForm>(streamReader)!;
+
+            if (!_validation.ValidateEmail(userLoginForm.Email) || !_validation.ValidatePassword(userLoginForm.Password))
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Invalid user data"), 0, Encoding.UTF8.GetBytes("Invalid user data").Length);
+                response.Close();
+                return;
+            }
+
+            var user = _userRepository.GetByEmail(userLoginForm.Email);
+            if (user == null || user.Password != userLoginForm.Password)
+            {
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                response.Close();
+                return;
+            }
             
+            try
+            {
+                var token = _userRepository.GenerateJwt(user);
+
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.ContentType = "application/json";
+                var tokenJson = JsonConvert.SerializeObject(new { token });
+                var responseBytes = Encoding.UTF8.GetBytes(tokenJson);
+                response.OutputStream.Write(responseBytes, 0, responseBytes.Length);
+                response.Close();
+
+            }
+            catch (Exception)
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Unexpected error occurred while trying to login! Please try again later!"), 0, Encoding.UTF8.GetBytes("Unexpected error occurred while trying to login! Please try again later!").Length);
+                response.Close();
+            }
         }
         public async Task Logout(HttpListenerContext context)
         {
