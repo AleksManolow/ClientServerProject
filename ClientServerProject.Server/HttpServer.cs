@@ -56,12 +56,12 @@ namespace ClientServerProject.Server
                 case "/update":
                     userContrller.Update(context);
                     break;
-                /*case "/delete":
+                case "/delete":
                     userContrller.Delete(context);
                     break;
                 case "/get":
                     userContrller.Get(context);
-                    break;*/
+                    break;
                 default:
                     context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                     context.Response.Close();

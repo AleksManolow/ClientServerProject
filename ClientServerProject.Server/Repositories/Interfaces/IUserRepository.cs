@@ -14,7 +14,7 @@ namespace ClientServerProject.Server.Repositories.Interfaces
         User GetByEmail(string email);
         void CreateUser(User user);
         void UpdateUser(User user);
-        void DeleteUser(User user);
+        void DeleteUser(int userId);
         public string GenerateJwt(User user);
     }
 }

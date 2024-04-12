@@ -189,9 +189,22 @@ namespace ClientServerProject.Server.Repositories
             sqlConnection.Close();
         }
 
-        public void DeleteUser(User user)
+        public void DeleteUser(int userId)
         {
-            throw new NotImplementedException();
+            string deleteQuery = @"
+                DELETE FROM Users
+                WHERE Id = @Id";
+
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+            sqlConnection.Open();
+
+            var command = new SqlCommand(deleteQuery, sqlConnection);
+
+            command.Parameters.AddWithValue("@Id", userId);
+
+            command.ExecuteNonQuery();
+
+            sqlConnection.Close();
         }
     }
 }
