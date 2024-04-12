@@ -39,19 +39,29 @@ namespace ClientServerProject.Server
         {
             var context = _listener.EndGetContext(result);
 
-            var usersController = new UserController(_userRepository);
+            var authController = new AuthController(_userRepository);
+            var userContrller = new UserController(_userRepository);
 
             switch (context.Request.Url.AbsolutePath)
             {
                 case "/register":
-                    usersController.Register(context);
+                    authController.Register(context);
                     break;
                 case "/login":
-                    usersController.Login(context);
+                    authController.Login(context);
                     break;
                 case "/logout":
-                    usersController.Logout(context);
+                    authController.Logout(context);
                     break;
+                case "/update":
+                    userContrller.Update(context);
+                    break;
+                /*case "/delete":
+                    userContrller.Delete(context);
+                    break;
+                case "/get":
+                    userContrller.Get(context);
+                    break;*/
                 default:
                     context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                     context.Response.Close();

@@ -12,7 +12,9 @@ namespace ClientServerProject.Server.Repositories.Interfaces
         public void InitializeDatabase();
         User GetById(int id);
         User GetByEmail(string email);
-        void AddUser(User user);
+        void CreateUser(User user);
+        void UpdateUser(User user);
+        void DeleteUser(User user);
         public string GenerateJwt(User user);
     }
 }

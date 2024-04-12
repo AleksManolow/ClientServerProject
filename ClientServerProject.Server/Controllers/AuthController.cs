@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace ClientServerProject.Server.Controllers
 {
-    public class UserController
+    public class AuthController
     {
         private readonly IUserRepository _userRepository;
         private readonly Validation _validation;
 
-        public UserController(IUserRepository userRepository)
+        public AuthController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
             _validation = new Validation();

@@ -3,6 +3,8 @@ using ClientServerProject.Server.Repositories.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
@@ -17,7 +19,7 @@ namespace ClientServerProject.Server.Repositories
             _connectionString = connectionString;
         }
 
-        public void AddUser(User user)
+        public void CreateUser(User user)
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
 
@@ -141,7 +143,7 @@ namespace ClientServerProject.Server.Repositories
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
-            
+
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ecawiasqrpqrgyhwnolrudpbsrwaynbqdayndnmcehjnwqyouikpodzaqxivwkconwqbhrmxfgccbxbyljguwlxhdlcvxlutbnwjlgpfhjgqbegtbxbvwnacyqnltrby"));
             var _TokenExpiryTimeInHour = Convert.ToInt64("3");
 
@@ -157,6 +159,39 @@ namespace ClientServerProject.Server.Repositories
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public void UpdateUser(User user)
+        {
+            string updateQuery = @"
+                UPDATE Users 
+                SET 
+                    Email = @Email, 
+                    FirstName = @FirstName, 
+                    LastName = @LastName, 
+                    Password = @Password, 
+                    IsVerified = @IsVerified
+                WHERE Id = @Id";
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+            sqlConnection.Open();
+
+            var command = new SqlCommand(updateQuery, sqlConnection);
+
+            command.Parameters.AddWithValue("@Id", user.Id);
+            command.Parameters.AddWithValue("@Email", user.Email);
+            command.Parameters.AddWithValue("@FirstName", user.FirstName);
+            command.Parameters.AddWithValue("@LastName", user.LastName);
+            command.Parameters.AddWithValue("@Password", user.Password);
+            command.Parameters.AddWithValue("@IsVerified", user.IsVerified);
+
+            command.ExecuteNonQuery();
+
+            sqlConnection.Close();
+        }
+
+        public void DeleteUser(User user)
+        {
+            throw new NotImplementedException();
         }
     }
 }
