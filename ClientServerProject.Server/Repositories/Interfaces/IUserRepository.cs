@@ -16,5 +16,6 @@ namespace ClientServerProject.Server.Repositories.Interfaces
         void UpdateUser(User user);
         void DeleteUser(int userId);
         public string GenerateJwt(User user);
+        public void SendVerificationEmail(string recipientEmail);
     }
 }

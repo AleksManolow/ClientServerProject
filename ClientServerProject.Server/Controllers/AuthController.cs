@@ -47,6 +47,7 @@ namespace ClientServerProject.Server.Controllers
 
             if (_userRepository.GetByEmail(user.Email) != null)
             {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.ContentType = "text/plain";
                 response.OutputStream.Write(Encoding.UTF8.GetBytes("User with this email is already registered"), 0, Encoding.UTF8.GetBytes("User with this email is already registered").Length);
                 response.Close();
@@ -58,6 +59,7 @@ namespace ClientServerProject.Server.Controllers
                 _userRepository.CreateUser(user);
 
                 //Logic to send confirmation email here to create
+                //_userRepository.SendVerificationEmail(user.Email);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "text/plain";

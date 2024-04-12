@@ -7,6 +7,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System;
 
 namespace ClientServerProject.Server.Repositories
 {
@@ -205,6 +206,20 @@ namespace ClientServerProject.Server.Repositories
             command.ExecuteNonQuery();
 
             sqlConnection.Close();
+        }
+        public void SendVerificationEmail(string recipientEmail)
+        {
+            MailMessage mail = new MailMessage();
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
+            mail.From = new MailAddress("email");
+            mail.To.Add(recipientEmail);
+            mail.Subject = "Email Verification!";
+            mail.Body = "Your verification code is: " + new Random().Next(100000, 999999).ToString();
+            smtpClient.Port = 587;
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Credentials = new NetworkCredential("email", "password");
+            smtpClient.EnableSsl = true;
+            smtpClient.Send(mail);
         }
     }
 }

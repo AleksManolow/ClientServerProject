@@ -1,11 +1,6 @@
 ﻿using ClientServerProject.Server.Controllers;
 using ClientServerProject.Server.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClientServerProject.Server
 {
@@ -42,7 +37,7 @@ namespace ClientServerProject.Server
             var authController = new AuthController(_userRepository);
             var userContrller = new UserController(_userRepository);
 
-            switch (context.Request.Url.AbsolutePath)
+            switch (context.Request.Url!.AbsolutePath)
             {
                 case "/register":
                     authController.Register(context);
