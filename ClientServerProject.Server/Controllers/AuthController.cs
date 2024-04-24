@@ -2,23 +2,19 @@
 using ClientServerProject.Server.Repositories;
 using ClientServerProject.Server.Repositories.Interfaces;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ClientServerProject.Server.Controllers
 {
     public class AuthController
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly Validation _validation;
 
-        public AuthController(IUserRepository userRepository)
+        public AuthController(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
             _validation = new Validation();
         }
         public async Task Register(HttpListenerContext context)
@@ -45,7 +41,7 @@ namespace ClientServerProject.Server.Controllers
                 return;
             }
 
-            if (_userRepository.GetByEmail(user.Email) != null)
+            if (_userService.GetByEmail(user.Email) != null)
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.ContentType = "text/plain";
@@ -56,10 +52,10 @@ namespace ClientServerProject.Server.Controllers
 
             try
             {
-                _userRepository.CreateUser(user);
+                _userService.CreateUser(user);
 
                 //Logic to send confirmation email here to create
-                //_userRepository.SendVerificationEmail(user.Email);
+                //_UserService.SendVerificationEmail(user.Email);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "text/plain";
@@ -99,7 +95,7 @@ namespace ClientServerProject.Server.Controllers
                 return;
             }
 
-            var user = _userRepository.GetByEmail(userLoginForm.Email);
+            var user = _userService.GetByEmail(userLoginForm.Email);
             if (user == null || user.Password != userLoginForm.Password)
             {
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -109,7 +105,7 @@ namespace ClientServerProject.Server.Controllers
             
             try
             {
-                var token = _userRepository.GenerateJwt(user);
+                var token = _userService.GenerateJwt(user);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "application/json";

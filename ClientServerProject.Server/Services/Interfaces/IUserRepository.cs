@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClientServerProject.Server.Repositories.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserService
     {
         public void InitializeDatabase();
         User GetById(int id);

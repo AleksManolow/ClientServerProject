@@ -2,24 +2,19 @@
 using ClientServerProject.Server.Repositories;
 using ClientServerProject.Server.Repositories.Interfaces;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ClientServerProject.Server.Controllers
 {
     public class UserController
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly Validation _validation;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
             _validation = new Validation();
         }
 
@@ -47,7 +42,7 @@ namespace ClientServerProject.Server.Controllers
                 return;
             }
 
-            if (_userRepository.GetById(user.Id) == null)
+            if (_userService.GetById(user.Id) == null)
             {
                 response.ContentType = "text/plain";
                 response.OutputStream.Write(Encoding.UTF8.GetBytes("User with this id does not exist"), 0, Encoding.UTF8.GetBytes("User with this id does not exist").Length);
@@ -57,7 +52,7 @@ namespace ClientServerProject.Server.Controllers
 
             try
             {
-                _userRepository.UpdateUser(user);
+                _userService.UpdateUser(user);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "text/plain";
@@ -87,7 +82,7 @@ namespace ClientServerProject.Server.Controllers
 
             UserIdForm userIdForm = JsonConvert.DeserializeObject<UserIdForm>(streamReader)!;
 
-            if (_userRepository.GetById(userIdForm.Id) == null)
+            if (_userService.GetById(userIdForm.Id) == null)
             {
                 response.ContentType = "text/plain";
                 response.OutputStream.Write(Encoding.UTF8.GetBytes("User with this id does not exist"), 0, Encoding.UTF8.GetBytes("User with this id does not exist").Length);
@@ -97,7 +92,7 @@ namespace ClientServerProject.Server.Controllers
 
             try
             {
-                _userRepository.DeleteUser(userIdForm.Id);
+                _userService.DeleteUser(userIdForm.Id);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "text/plain";
@@ -127,7 +122,7 @@ namespace ClientServerProject.Server.Controllers
 
             UserIdForm userIdForm = JsonConvert.DeserializeObject<UserIdForm>(streamReader)!;
 
-            if (_userRepository.GetById(userIdForm.Id) == null)
+            if (_userService.GetById(userIdForm.Id) == null)
             {
                 response.ContentType = "text/plain";
                 response.OutputStream.Write(Encoding.UTF8.GetBytes("User with this id does not exist"), 0, Encoding.UTF8.GetBytes("User with this id does not exist").Length);
@@ -137,7 +132,7 @@ namespace ClientServerProject.Server.Controllers
 
             try
             {
-                User user = _userRepository.GetById(userIdForm.Id);
+                User user = _userService.GetById(userIdForm.Id);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "application/json";

@@ -7,13 +7,13 @@ namespace ClientServerProject.Server
     public class HttpServer
     {
         private readonly HttpListener _listener;
-        private readonly UserRepository _userRepository;
+        private readonly UserService _userService;
 
-        public HttpServer(UserRepository userRepository)
+        public HttpServer(UserService UserService)
         {
             _listener = new HttpListener();
             _listener.Prefixes.Add("http://localhost:8075/");
-            _userRepository = userRepository;
+            _userService = UserService;
         }
 
         public void Start()
@@ -34,8 +34,8 @@ namespace ClientServerProject.Server
         {
             var context = _listener.EndGetContext(result);
 
-            var authController = new AuthController(_userRepository);
-            var userContrller = new UserController(_userRepository);
+            var authController = new AuthController(_userService);
+            var userContrller = new UserController(_userService);
 
             switch (context.Request.Url!.AbsolutePath)
             {

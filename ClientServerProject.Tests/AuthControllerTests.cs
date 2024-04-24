@@ -20,7 +20,7 @@ namespace ClientServerProject.Tests
         [SetUp]
         public void Setup()
         {
-            _httpServer = new HttpServer(new UserRepository(@"Server=DESKTOP-AJ5FISA\SQLEXPRESS;Database=ClientServerProject;Integrated Security = True;TrustServerCertificate=True;"));
+            _httpServer = new HttpServer(new UserService(@"Server=DESKTOP-AJ5FISA\SQLEXPRESS;Database=ClientServerProject;Integrated Security = True;TrustServerCertificate=True;"));
             _httpServer.Start();
             _httpClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
         }

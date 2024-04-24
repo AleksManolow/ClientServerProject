@@ -9,11 +9,11 @@ namespace ClientServerProject.Server
         {
             string connectionString = @"Server=DESKTOP-AJ5FISA\SQLEXPRESS;Database=ClientServerProject;Integrated Security = True;TrustServerCertificate=True;";
 
-            var userRepository = new UserRepository(connectionString);
+            var userService = new UserService(connectionString);
 
-            userRepository.InitializeDatabase();
+            userService.InitializeDatabase();
 
-            var httpServer = new HttpServer(userRepository);
+            var httpServer = new HttpServer(userService);
             httpServer.Start();
 
             Console.WriteLine("Server started. Press any key to stop...");

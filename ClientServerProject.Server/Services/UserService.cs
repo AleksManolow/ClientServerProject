@@ -11,11 +11,11 @@ using System;
 
 namespace ClientServerProject.Server.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserService : IUserService
     {
         private readonly string _connectionString;
 
-        public UserRepository(string connectionString)
+        public UserService(string connectionString)
         {
             _connectionString = connectionString;
         }
