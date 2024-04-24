@@ -1,11 +1,6 @@
 ﻿using ClientServerProject.Server.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ClientServerProject.Server.Repositories.Interfaces
+namespace ClientServerProject.Server.Services.Interfaces
 {
     public interface IUserService
     {

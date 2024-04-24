@@ -1,5 +1,5 @@
 ﻿using ClientServerProject.Server.Controllers;
-using ClientServerProject.Server.Repositories;
+using ClientServerProject.Server.Services;
 using System.Net;
 
 namespace ClientServerProject.Server
@@ -9,17 +9,16 @@ namespace ClientServerProject.Server
         private readonly HttpListener _listener;
         private readonly UserService _userService;
 
-        public HttpServer(UserService UserService)
+        public HttpServer(UserService userService)
         {
             _listener = new HttpListener();
             _listener.Prefixes.Add("http://localhost:8075/");
-            _userService = UserService;
+            _userService = userService;
         }
 
         public void Start()
         {
             _listener.Start();
-            Console.WriteLine("HTTP server started.");
             _listener.BeginGetContext(HandleRequest, null);
         }
 
@@ -27,7 +26,6 @@ namespace ClientServerProject.Server
         {
             _listener.Stop();
             _listener.Close();
-            Console.WriteLine("HTTP server stopped.");
         }
 
         private void HandleRequest(IAsyncResult result)

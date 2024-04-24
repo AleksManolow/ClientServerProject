@@ -1,5 +1,5 @@
 ﻿using ClientServerProject.Server.Models;
-using ClientServerProject.Server.Repositories.Interfaces;
+using ClientServerProject.Server.Services.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System;
 
-namespace ClientServerProject.Server.Repositories
+namespace ClientServerProject.Server.Services
 {
     public class UserService : IUserService
     {

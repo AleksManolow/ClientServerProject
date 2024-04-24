@@ -1,5 +1,5 @@
 ﻿using ClientServerProject.Server.Models;
-using ClientServerProject.Server.Repositories;
+using ClientServerProject.Server.Services;
 
 namespace ClientServerProject.Server
 {
@@ -16,11 +16,7 @@ namespace ClientServerProject.Server
             var httpServer = new HttpServer(userService);
             httpServer.Start();
 
-            Console.WriteLine("Server started. Press any key to stop...");
-            Console.ReadKey();
-
             httpServer.Stop();
-
         }
     }
 }

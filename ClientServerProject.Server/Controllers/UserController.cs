@@ -1,6 +1,6 @@
 ﻿using ClientServerProject.Server.Models;
-using ClientServerProject.Server.Repositories;
-using ClientServerProject.Server.Repositories.Interfaces;
+using ClientServerProject.Server.Services;
+using ClientServerProject.Server.Services.Interfaces;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
