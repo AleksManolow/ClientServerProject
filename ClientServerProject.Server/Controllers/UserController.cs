@@ -2,6 +2,7 @@
 using ClientServerProject.Server.Services;
 using ClientServerProject.Server.Services.Interfaces;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text;
 
@@ -29,11 +30,36 @@ namespace ClientServerProject.Server.Controllers
                 response.Close();
                 return;
             }
+
+            var tokenString = request.Headers["Authorization"]?.Replace("Bearer ", "");
+
+            if (string.IsNullOrEmpty(tokenString))
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Invalid JWT token."), 0, Encoding.UTF8.GetBytes("Invalid JWT token.").Length);
+                response.Close();
+                return;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadJwtToken(tokenString);
+
+            var user = _userService.GetById(int.Parse(token.Claims.FirstOrDefault(t => t.Type == "nameid").Value));
+            if (user == null)
+            {
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Unauthorized user."), 0, Encoding.UTF8.GetBytes("Unauthorized user.").Length);
+                response.Close();
+                return;
+            }
+
             string streamReader = new StreamReader(request.InputStream).ReadToEnd();
 
-            User user = JsonConvert.DeserializeObject<User>(streamReader)!;
+            User userInfo = JsonConvert.DeserializeObject<User>(streamReader)!;
 
-            if (!_validation.ValidateEmail(user.Email) || !_validation.ValidateName(user.FirstName) || !_validation.ValidateName(user.LastName) || !_validation.ValidatePassword(user.Password))
+            if (!_validation.ValidateEmail(userInfo.Email) || !_validation.ValidateName(userInfo.FirstName) || !_validation.ValidateName(userInfo.LastName) || !_validation.ValidatePassword(userInfo.Password))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.ContentType = "text/plain";
@@ -42,7 +68,7 @@ namespace ClientServerProject.Server.Controllers
                 return;
             }
 
-            if (_userService.GetById(user.Id) == null)
+            if (_userService.GetById(userInfo.Id) == null)
             {
                 response.ContentType = "text/plain";
                 response.OutputStream.Write(Encoding.UTF8.GetBytes("User with this id does not exist"), 0, Encoding.UTF8.GetBytes("User with this id does not exist").Length);
@@ -52,7 +78,7 @@ namespace ClientServerProject.Server.Controllers
 
             try
             {
-                _userService.UpdateUser(user);
+                _userService.UpdateUser(userInfo);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "text/plain";
@@ -78,6 +104,31 @@ namespace ClientServerProject.Server.Controllers
                 response.Close();
                 return;
             }
+
+            var tokenString = request.Headers["Authorization"]?.Replace("Bearer ", "");
+
+            if (string.IsNullOrEmpty(tokenString))
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Invalid JWT token."), 0, Encoding.UTF8.GetBytes("Invalid JWT token.").Length);
+                response.Close();
+                return;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadJwtToken(tokenString);
+
+            var user = _userService.GetById(int.Parse(token.Claims.FirstOrDefault(t => t.Type == "nameid").Value));
+            if (user == null)
+            {
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Unauthorized user."), 0, Encoding.UTF8.GetBytes("Unauthorized user.").Length);
+                response.Close();
+                return;
+            }
+
             string streamReader = new StreamReader(request.InputStream).ReadToEnd();
 
             UserIdForm userIdForm = JsonConvert.DeserializeObject<UserIdForm>(streamReader)!;
@@ -118,6 +169,31 @@ namespace ClientServerProject.Server.Controllers
                 response.Close();
                 return;
             }
+
+            var tokenString = request.Headers["Authorization"]?.Replace("Bearer ", "");
+
+            if (string.IsNullOrEmpty(tokenString))
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Invalid JWT token."), 0, Encoding.UTF8.GetBytes("Invalid JWT token.").Length);
+                response.Close();
+                return;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadJwtToken(tokenString);
+
+            var user = _userService.GetById(int.Parse(token.Claims.FirstOrDefault(t => t.Type == "nameid").Value));
+            if (user == null)
+            {
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                response.ContentType = "text/plain";
+                response.OutputStream.Write(Encoding.UTF8.GetBytes("Unauthorized user."), 0, Encoding.UTF8.GetBytes("Unauthorized user.").Length);
+                response.Close();
+                return;
+            }
+
             string streamReader = new StreamReader(request.InputStream).ReadToEnd();
 
             UserIdForm userIdForm = JsonConvert.DeserializeObject<UserIdForm>(streamReader)!;
@@ -132,11 +208,11 @@ namespace ClientServerProject.Server.Controllers
 
             try
             {
-                User user = _userService.GetById(userIdForm.Id);
+                User userInfo = _userService.GetById(userIdForm.Id);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "application/json";
-                var userjson = JsonConvert.SerializeObject(user);
+                var userjson = JsonConvert.SerializeObject(userInfo);
                 response.OutputStream.Write(Encoding.UTF8.GetBytes(userjson), 0, Encoding.UTF8.GetBytes(userjson).Length);
                 response.Close();
             }
