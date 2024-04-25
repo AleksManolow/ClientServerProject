@@ -16,6 +16,9 @@ namespace ClientServerProject.Server
             var httpServer = new HttpServer(userService);
             httpServer.Start();
 
+            Console.WriteLine("Server started. Press any key to stop!");
+            Console.ReadKey();
+
             httpServer.Stop();
         }
     }

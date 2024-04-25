@@ -170,7 +170,7 @@ namespace ClientServerProject.Server.Services
                     Email = @Email, 
                     FirstName = @FirstName, 
                     LastName = @LastName, 
-                    Password = @Password, 
+                    Password = @Password,
                     IsVerified = @IsVerified
                 WHERE Id = @Id";
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
@@ -184,7 +184,7 @@ namespace ClientServerProject.Server.Services
             command.Parameters.AddWithValue("@LastName", user.LastName);
             command.Parameters.AddWithValue("@Password", user.Password);
             command.Parameters.AddWithValue("@IsVerified", user.IsVerified);
-
+            
             command.ExecuteNonQuery();
 
             sqlConnection.Close();

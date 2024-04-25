@@ -2,6 +2,8 @@
 using ClientServerProject.Server.Services;
 using ClientServerProject.Server.Services.Interfaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text;
 
@@ -55,7 +57,7 @@ namespace ClientServerProject.Server.Controllers
                 _userService.CreateUser(user);
 
                 //Logic to send confirmation email here to create
-                //_UserService.SendVerificationEmail(user.Email);
+                //_userService.SendVerificationEmail(user.Email);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.ContentType = "text/plain";
@@ -124,7 +126,6 @@ namespace ClientServerProject.Server.Controllers
         }
         public async Task Logout(HttpListenerContext context)
         {
-
             var request = context.Request;
             var response = context.Response;
 
@@ -135,11 +136,22 @@ namespace ClientServerProject.Server.Controllers
                 return;
             }
 
-            var token = request.Headers["Authorization"]?.Replace("Bearer ", "");
+            var tokenString = request.Headers["Authorization"]?.Replace("Bearer ", "");
 
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(tokenString))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.Close();
+                return;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadJwtToken(tokenString);
+
+            var user = _userService.GetById(int.Parse(token.Claims.FirstOrDefault(t => t.Type == "nameid").Value));
+            if (user == null)
+            {
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 response.Close();
                 return;
             }
@@ -158,7 +170,6 @@ namespace ClientServerProject.Server.Controllers
                 response.OutputStream.Write(Encoding.UTF8.GetBytes("Unexpected error occurred while trying to logout! Please try again later!"), 0, Encoding.UTF8.GetBytes("Unexpected error occurred while trying to logout! Please try again later!").Length);
                 response.Close();
             }
-
         }
     }
 }
